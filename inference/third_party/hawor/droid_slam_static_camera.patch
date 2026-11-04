@@ -1,0 +1,45 @@
+diff --git a/thirdparty/DROID-SLAM/droid_slam/droid_backend.py b/thirdparty/DROID-SLAM/droid_slam/droid_backend.py
+index 49e9fe0..bf64c4c 100644
+--- a/thirdparty/DROID-SLAM/droid_slam/droid_backend.py
++++ b/thirdparty/DROID-SLAM/droid_slam/droid_backend.py
+@@ -27,6 +27,13 @@ class DroidBackend:
+         """ main update """
+ 
+         t = self.video.counter.value
++        # A static clip can terminate with only one keyframe. There are no
++        # frame pairs to optimize, and FactorGraph cannot unpack an empty edge
++        # list, so the correct backend operation is a no-op.
++        if t < 2:
++            self.video.dirty[:t] = True
++            return
++
+         if not self.video.stereo and not torch.any(self.video.disps_sens):
+              self.video.normalize()
+ 
+@@ -49,4 +56,3 @@ class DroidBackend:
+         diff = graph.target - coord
+         err = diff.norm(dim=-1).mean().item()
+         return err
+-
+diff --git a/thirdparty/DROID-SLAM/setup.py b/thirdparty/DROID-SLAM/setup.py
+index 9af97d4..c0466c8 100644
+--- a/thirdparty/DROID-SLAM/setup.py
++++ b/thirdparty/DROID-SLAM/setup.py
+@@ -23,7 +23,7 @@ setup(
+                     '-gencode=arch=compute_70,code=sm_70',
+                     '-gencode=arch=compute_75,code=sm_75',
+                     '-gencode=arch=compute_80,code=sm_80',
+-                    '-gencode=arch=compute_86,code=sm_86',
++                    '-gencode=arch=compute_86,code=[compute_86,sm_86]',
+                 ]
+             }),
+     ],
+@@ -53,7 +53,7 @@ setup(
+                     '-gencode=arch=compute_70,code=sm_70', 
+                     '-gencode=arch=compute_75,code=sm_75',
+                     '-gencode=arch=compute_80,code=sm_80',
+-                    '-gencode=arch=compute_86,code=sm_86',                 
++                    '-gencode=arch=compute_86,code=[compute_86,sm_86]',
+                 ]
+             }),
+     ],

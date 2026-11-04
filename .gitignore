@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# local configuration and downloaded assets
+inference/config.env
+inference/checkpoints/*.pt
+inference/checkpoints/*.ckpt
+inference/data/base_data/human_models/mano/*.pkl
+inference/data/base_data/mano_assets.npz
+inference/data/base_data/demo_data/
+inference/third_party/vjepa2_repo/
+inference/out/
+
+# datasets and generated data
+/data/
